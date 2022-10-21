@@ -68,12 +68,12 @@ int obt_elemento(int i, int j, matriz *matrizP){
     }
      //Buscar la fila
      Fila *fila_aux=matrizP->filas;
-    for(; fila_aux->id<=i ; fila_aux=fila_aux->next);
+    for(; fila_aux->id<i && fila_aux->id!=NULL ; fila_aux=fila_aux->next);
 
         //Si encuentra la fila, empieza a buscar la columna
         if (fila_aux->id==i){
             Columna *columna_aux=fila_aux->col;
-            for(;columna_aux->id<=j;columna_aux=columna_aux->next);
+            for(;columna_aux->id<j && columna_aux->id!=NULL;columna_aux=columna_aux->next);
             if(columna_aux->id==j)
                 //Si encuentra la columna, devuelve el valor
                 return columna_aux->valor;
