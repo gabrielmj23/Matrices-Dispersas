@@ -1,6 +1,7 @@
 /*
  * matriz.h: Contiene declaraciones de tipo de matrices, filas y columnas
  * Además contiene los prototipos de las funciones básicas de manejo de matrices
+ *
  */
 
 typedef struct columna 
