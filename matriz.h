@@ -4,7 +4,7 @@
  *
  */
 
-typedef struct columna 
+typedef struct columna
 {
 	int id;
 	int valor;
@@ -13,7 +13,7 @@ typedef struct columna
 Columna;
 
 
-typedef struct fila 
+typedef struct fila
 {
 	int id;
 	Columna *col;
@@ -34,3 +34,4 @@ Matriz;
 Matriz *nueva_matriz(int nFilas, int nCols);
 Fila *nueva_fila(int id);
 Columna *nueva_columna(int id, int val);
+int obt_elemento(int i, int j, matriz *matrizP);

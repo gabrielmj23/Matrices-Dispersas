@@ -53,3 +53,39 @@ Columna *nueva_columna(int id, int val) {
 	c->next = NULL;
 	return c;
 }
+
+//Obtener un elemento de la matriz
+int obt_elemento(int i, int j, matriz *matrizP){
+    //Revisar si la matriz existe
+    if (matrizP==NULL){
+        fprintf(stderr, "obt_elemento: La matriz no existe");
+        exit(1);
+    }
+    //Revisar si la ubicacion esta en la matriz
+    if (i>matrizP->numFilas || j>matrizP->numColumnas){
+        fprintf(stderr, "obt_elemento: El elemento esta fuera de las dimensiones de la matriz");
+        exit(1);
+    }
+     //Buscar la fila
+     Fila *fila_aux=matrizP->filas;
+    for(; fila_aux->id<=i ; fila_aux=fila_aux->next){
+
+        if (fila_aux->id==i){
+            //Si encuentra la fila, empieza a buscar la columna
+            Columna *columna_aux=fila_aux->col;
+            for(;columna_aux->id<=j;columna_aux=columna_aux->next){
+            if(columna_aux->id==j)
+                //Si encuentra la columna, devuelve el valor
+                return columna_aux->valor;
+            //Si no encuentra el id de la columna retorna 0
+            return 0;
+            }
+
+        }
+        //Si no encuentra el id de la fila retorna 0
+        return 0;
+
+    }
+
+}
+
