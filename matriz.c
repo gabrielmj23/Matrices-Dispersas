@@ -55,6 +55,28 @@ Columna *nueva_columna(int id, int val) {
 }
 
 
+// Libera la memoria reservada por matrizP y sus nodos hijos
+void limpiar_matriz(Matriz *matrizP) {
+	if (!matrizP) return;
+
+	Fila *filaAct = matrizP->filas, *filaTmp;
+	Columna *colAct, *colTmp;
+
+	while (filaAct) {
+		colAct = filaAct->col;
+		while (colAct) {
+			colTmp = colAct->next;
+			free(colAct);
+			colAct = colTmp;
+		}
+		filaTmp = filaAct->next;
+		free(filaAct);
+		filaAct = filaTmp;
+	}
+	free(matrizP);
+}
+
+
 // Copia la fila src en dest
 Fila *copiar_fila(Fila *src, Fila *dest) {
 	Columna *colSrc = src->col, *colDest = dest->col;
