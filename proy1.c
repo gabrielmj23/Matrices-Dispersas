@@ -87,5 +87,17 @@ Matriz *sumar(Matriz *m1, Matriz *m2) {
 		if (fSum->col != NULL)
 			fSum = fSum->next;
 	}
+
+	// Copiar filas que hayan sobrado (las listas pueden tener longitudes distintas)
+	while (f1) {
+		fSum = copiar_fila(f1, nueva_fila(f1->id));
+		fSum = fSum->next;
+		f1 = f1->next;
+	}
+	while (f2) {
+		fSum = copiar_fila(f2, nueva_fila(f2->id));
+		fSum = fSum->next;
+		f2 = f2->next;
+	}
 	return sum;
 }
