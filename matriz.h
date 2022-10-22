@@ -35,3 +35,4 @@ Matriz *nueva_matriz(int nFilas, int nCols);
 Fila *nueva_fila(int id);
 Columna *nueva_columna(int id, int val);
 Fila *copiar_fila(Fila *src, Fila *dest);
+void imprimir_matriz(Matriz *matrizP);

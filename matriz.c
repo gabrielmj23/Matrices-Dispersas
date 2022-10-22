@@ -65,3 +65,47 @@ Fila *copiar_fila(Fila *src, Fila *dest) {
 	}
 	return dest;
 }
+
+
+// Muestra en pantalla la matriz apuntada por matrizP
+void imprimir_matriz(Matriz *matrizP) {
+	if (!matrizP) {
+		printf("La matriz se encuentra vacía\n");
+		return;
+	}
+
+	register int i = 1, j = 1;
+	Fila *filaAct = matrizP->filas;
+	Columna *colAct;
+
+	while (filaAct) {
+		// Si no se han escrito filas entre la última y la actual, estarán llenas de 0
+		for (; i < filaAct->id; i++) {
+			for (j = 1; j <= matrizP->numColumnas; j++)
+				printf("0 ");
+			printf("\n");
+		}
+
+		// Imprimir fila actual
+		j = 1;
+		colAct = filaAct->col;
+		while (col) {
+			for (; j < colAct->id; j++)
+				printf("0 ");
+			printf("%i ", colAct->valor);
+			col = col->next;
+		}
+		for (; j <= matrizP->numColumnas; j++)
+			printf("0 ");
+		printf("\n");
+		++i;
+		filaAct = filaAct->next;
+	}
+
+	// Escribir filas restantes que deberían estar después de la última que aparece en la lista
+	for (; i <= matrizP->numFilas; i++) {
+		for (j = 1; j <= matrizP->numColumnas; j++)
+			printf("0 ");
+		printf("\n");
+	}
+}
