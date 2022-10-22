@@ -53,3 +53,15 @@ Columna *nueva_columna(int id, int val) {
 	c->next = NULL;
 	return c;
 }
+
+
+// Copia la fila src en dest
+Fila *copiar_fila(Fila *src, Fila *dest) {
+	Columna *colSrc = src->col, *colDest = dest->col;
+	while (colSrc) {
+		colDest = nueva_columna(colSrc->id, colSrc->val);
+		colDest = colDest->next;
+		colSrc = colSrc->next;
+	}
+	return dest;
+}
