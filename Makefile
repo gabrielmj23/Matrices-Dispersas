@@ -1,6 +1,6 @@
 # Archivo con funcionalidad básica de matrices
 matriz.o: matriz.h matriz.c
-	gcc -Wall -g -c matriz.o matriz.c
+	gcc -Wall -g -c matriz.c -o matriz.o
 
 # Programa principal
 proy1: proy1.c matriz.o

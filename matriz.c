@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "matriz.h"
 
 // Crea una nueva matriz
@@ -55,6 +56,53 @@ Columna *nueva_columna(int id, int val) {
 }
 
 
+// Pide entradas del usuario y devuelve una matriz llena
+Matriz *rellenar_matriz() {
+	// Pedir dimensiones
+	int f, c;
+	printf("Ingrese las dimensiones de la matriz (filas y columnas): ");
+	scanf("%i %i", &f, &c);
+
+	Matriz *nuevaM = nueva_matriz(f, c);
+	// Crear fila y columna auxiliar
+	nuevaM->filas = nueva_fila(1);
+	Fila *filaAct = nuevaM->filas;
+	Columna *colAct;
+	register int i = 1, j;
+	int val;
+
+	// Pedir filas y columnas
+	for (; i <= f; i++) {
+		// Avanzar puntero de fila solo si ya se utilizó
+		if (filaAct->col == NULL)
+			filaAct->id = i;
+		else {
+			filaAct->next = nueva_fila(i);
+			filaAct = filaAct->next;
+		}
+
+		printf("Fila %i: ", i);
+		for (j = 1; j <= c; j++) {
+			scanf("%i", &val);
+			// Solo crear columna si el valor es distinto de 0
+			if (val) {
+				if (filaAct->col == NULL)
+					colAct = filaAct->col = nueva_columna(j, val);
+				else {
+					colAct->next = nueva_columna(j, val);
+					colAct = colAct->next;
+				}
+			}
+		}
+	}
+	if (filaAct && filaAct->col == NULL) {
+		free(filaAct);
+		filaAct = NULL;
+	}
+	return nuevaM;
+}
+
+
 // Libera la memoria reservada por matrizP y sus nodos hijos
 void limpiar_matriz(Matriz *matrizP) {
 	if (!matrizP) return;
@@ -81,7 +129,7 @@ void limpiar_matriz(Matriz *matrizP) {
 Fila *copiar_fila(Fila *src, Fila *dest) {
 	Columna *colSrc = src->col, *colDest = dest->col;
 	while (colSrc) {
-		colDest = nueva_columna(colSrc->id, colSrc->val);
+		colDest = nueva_columna(colSrc->id, colSrc->valor);
 		colDest = colDest->next;
 		colSrc = colSrc->next;
 	}
@@ -91,7 +139,7 @@ Fila *copiar_fila(Fila *src, Fila *dest) {
 
 // Muestra en pantalla la matriz apuntada por matrizP
 void imprimir_matriz(Matriz *matrizP) {
-	if (!matrizP) {
+	if (!matrizP || !matrizP->filas) {
 		printf("La matriz se encuentra vacía\n");
 		return;
 	}
@@ -100,7 +148,7 @@ void imprimir_matriz(Matriz *matrizP) {
 	Fila *filaAct = matrizP->filas;
 	Columna *colAct;
 
-	while (filaAct) {
+	while (filaAct != NULL) {
 		// Si no se han escrito filas entre la última y la actual, estarán llenas de 0
 		for (; i < filaAct->id; i++) {
 			for (j = 1; j <= matrizP->numColumnas; j++)
@@ -111,11 +159,12 @@ void imprimir_matriz(Matriz *matrizP) {
 		// Imprimir fila actual
 		j = 1;
 		colAct = filaAct->col;
-		while (col) {
+		while (colAct) {
 			for (; j < colAct->id; j++)
 				printf("0 ");
 			printf("%i ", colAct->valor);
-			col = col->next;
+			colAct = colAct->next;
+			j++;
 		}
 		for (; j <= matrizP->numColumnas; j++)
 			printf("0 ");
@@ -130,4 +179,5 @@ void imprimir_matriz(Matriz *matrizP) {
 			printf("0 ");
 		printf("\n");
 	}
+	printf("\n");
 }
