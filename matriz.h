@@ -34,5 +34,6 @@ Matriz;
 Matriz *nueva_matriz(int nFilas, int nCols);
 Fila *nueva_fila(int id);
 Columna *nueva_columna(int id, int val);
-int obt_elemento(int i, int j, matriz *matrizP);
-Matriz *asign_elemento(int i, int j, int elemento, matriz *matrizP);
+int obt_elemento(int i, int j, Matriz *matrizP);
+Matriz *asign_elemento(int i, int j, int elemento, Matriz *matrizP);
+

@@ -55,7 +55,7 @@ Columna *nueva_columna(int id, int val) {
 }
 
 //Obtener un elemento de la matriz
-int obt_elemento(int i, int j, matriz *matrizP){
+int obt_elemento(int i, int j, Matriz *matrizP){
     //Revisar si la matriz existe
     if (matrizP==NULL){
         fprintf(stderr, "obt_elemento: La matriz no existe");
@@ -86,7 +86,7 @@ int obt_elemento(int i, int j, matriz *matrizP){
 
 }
 
-Matriz *asign_elemento(int i, int j, int elemento, matriz *matrizP){
+Matriz *asign_elemento(int i, int j, int elemento, Matriz *matrizP){
     //Revisar si la matriz existe
     if (matrizP==NULL){
         fprintf(stderr, "asign_elemento: La matriz no existe");
