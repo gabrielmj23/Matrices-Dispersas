@@ -86,3 +86,36 @@ int obt_elemento(int i, int j, matriz *matrizP){
 
 }
 
+Matriz *asign_elemento(int i, int j, int elemento, matriz *matrizP){
+    //Revisar si la matriz existe
+    if (matrizP==NULL){
+        fprintf(stderr, "asign_elemento: La matriz no existe");
+        exit(1);
+    }
+
+    //Buscar la fila
+     Fila *fila_aux=matrizP->filas;
+    for(; fila_aux->id<i && fila_aux->id!=NULL ; fila_aux=fila_aux->next);
+
+        //Si encuentra la fila, empieza a buscar la columna
+        if (fila_aux->id==i){
+            Columna *columna_aux=fila_aux->col;
+            for(;columna_aux->id<j && columna_aux->id!=NULL;columna_aux=columna_aux->next);
+            if(columna_aux->id==j){
+                //Si encuentra la columna, asigna el elemento
+                columna_aux->valor=elemento;
+                return *matrizP;
+            }
+            //Si no encuentra el id de la columna la crea
+            columna_aux=nueva_columna(j,elemento);
+            return *matrizP;
+
+        }
+        //Si no encuentra el id crea la fila y crea la columna
+        fila_aux=nueva_fila(i);
+        Columna *columna_aux=fila_aux->col;
+        columna_aux=nueva_columna(j,elemento);
+        return *matrizP;
+
+
+}
