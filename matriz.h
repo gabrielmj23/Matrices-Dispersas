@@ -4,7 +4,7 @@
  *
  */
 
-typedef struct columna 
+typedef struct columna
 {
 	int id;
 	int valor;
@@ -13,7 +13,7 @@ typedef struct columna
 Columna;
 
 
-typedef struct fila 
+typedef struct fila
 {
 	int id;
 	Columna *col;
@@ -38,3 +38,5 @@ Matriz *rellenar_matriz();
 void limpiar_matriz(Matriz *matrizP);
 Fila *copiar_fila(Fila *src, Fila *dest);
 void imprimir_matriz(Matriz *matrizP);
+int obt_elemento(int i, int j, matriz *matrizP);
+Matriz *asign_elemento(int i, int j, int elemento, matriz *matrizP);
