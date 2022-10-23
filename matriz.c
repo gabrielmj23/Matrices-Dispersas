@@ -71,10 +71,10 @@ int obt_elemento(int i, int j, Matriz *matrizP){
     for(;fila_aux!=NULL && fila_aux->id<i; fila_aux=fila_aux->next);
 
         //Si encuentra la fila, empieza a buscar la columna
-        if (fila_aux->id==i){
+        if (fila_aux && fila_aux->id==i){
             Columna *columna_aux=fila_aux->col;
             for(;columna_aux!=NULL && columna_aux->id<j;columna_aux=columna_aux->next);
-            if(columna_aux->id==j)
+            if(columna_aux && columna_aux->id==j)
                 //Si encuentra la columna, devuelve el valor
                 return columna_aux->valor;
             //Si no encuentra el id de la columna retorna 0
@@ -92,29 +92,39 @@ Matriz *asign_elemento(int i, int j, int elemento, Matriz *matrizP){
         fprintf(stderr, "asign_elemento: La matriz no existe");
         exit(1);
     }
+    //Revisar si la ubicacion esta en la matriz
+    if (i>matrizP->numFilas || j>matrizP->numColumnas){
+        fprintf(stderr, "asign_elemento: El elemento esta fuera de las dimensiones de la matriz");
+        exit(1);
+    }
 
     //Buscar la fila
      Fila *fila_aux=matrizP->filas;
-    for(;fila_aux!=NULL && fila_aux->id<i; fila_aux=fila_aux->next);
+     Fila *prev_fila=fila_aux;
+    for(;fila_aux!=NULL && fila_aux->id<i; fila_aux=fila_aux->next)
+        prev_fila=fila_aux;
 
         //Si encuentra la fila, empieza a buscar la columna
-        if (fila_aux->id==i){
+        if (fila_aux && fila_aux->id==i){
             Columna *columna_aux=fila_aux->col;
-            for(;columna_aux!=NULL && columna_aux->id<j;columna_aux=columna_aux->next);
-            if(columna_aux->id==j){
-                //Si encuentra la columna, asigna el elemento
+            Columna *prev_col=columna_aux;
+            for(;columna_aux!=NULL && columna_aux->id<j;columna_aux=columna_aux->next)
+                prev_col=columna_aux;
+
+            //Si encuentra la columna, asigna el elemento
+            if(columna_aux && columna_aux->id==j){
                 columna_aux->valor=elemento;
                 return *matrizP;
             }
             //Si no encuentra el id de la columna la crea
-            columna_aux=nueva_columna(j,elemento);
+            prev_col->next=nueva_columna(j,elemento);
             return *matrizP;
 
         }
         //Si no encuentra el id crea la fila y crea la columna
-        fila_aux=nueva_fila(i);
+        prev_fila=nueva_fila(i);
         Columna *columna_aux=nueva_columna(j,elemento);
-        fila_aux->col=columna_aux;
+        prev_fila->col=columna_aux;
         return *matrizP;
 
 
