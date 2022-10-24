@@ -95,9 +95,9 @@ Matriz *rellenar_matriz() {
 			}
 		}
 	}
-	if (filaAct && filaAct->col == NULL) {
-		free(filaAct);
+	if (filaAct->col == NULL) {
 		filaAct = NULL;
+		free(filaAct);
 	}
 	return nuevaM;
 }
@@ -144,7 +144,7 @@ void imprimir_matriz(Matriz *matrizP) {
 		return;
 	}
 
-	register int i = 1, j = 1;
+	register int i = 1, j;
 	Fila *filaAct = matrizP->filas;
 	Columna *colAct;
 
@@ -187,12 +187,12 @@ void imprimir_matriz(Matriz *matrizP) {
 int obt_elemento(int i, int j, Matriz *matrizP) {
   // Revisar si la matriz existe
   if (matrizP==NULL){
-    fprintf(stderr, "obt_elemento: La matriz no existe");
+    fprintf(stderr, "obt_elemento: La matriz no existe\n");
     exit(1);
   }
   // Revisar si la ubicacion esta en la matriz
   if (i>matrizP->numFilas || j>matrizP->numColumnas){
-    fprintf(stderr, "obt_elemento: El elemento esta fuera de las dimensiones de la matriz");
+    fprintf(stderr, "obt_elemento: El elemento esta fuera de las dimensiones de la matriz\n");
     exit(1);
   }
   // Buscar la fila
@@ -219,12 +219,12 @@ int obt_elemento(int i, int j, Matriz *matrizP) {
 Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP) {
   // Revisar si la matriz existe
   if (matrizP==NULL){
-    fprintf(stderr, "asignar_elemento: La matriz no existe");
+    fprintf(stderr, "asignar_elemento: La matriz no existe\n");
     exit(1);
   }
   // Revisar si la ubicacion esta en la matriz
   if (i>matrizP->numFilas || j>matrizP->numColumnas){
-    fprintf(stderr, "asignar_elemento: El elemento esta fuera de las dimensiones de la matriz");
+    fprintf(stderr, "asignar_elemento: El elemento esta fuera de las dimensiones de la matriz\n");
     exit(1);
   }
 
@@ -260,6 +260,7 @@ Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP) {
   Fila *nFila = nueva_fila(i);
   nFila->col=nueva_columna(j,elemento);
   nFila->next=fila_aux;
+
   if (prev_fila!=NULL)
   	prev_fila->next=nFila;
   else

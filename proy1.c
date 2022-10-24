@@ -12,12 +12,6 @@ Matriz *sumar(Matriz *m1, Matriz *m2);
 
 
 int main(void) {
-	Matriz *m = rellenar_matriz();
-	imprimir_matriz(m);
-	m = asignar_elemento(1, 3, 15, m);
-	m = asignar_elemento(2, 2, -5, m);
-	m = asignar_elemento(3, 1, -3, m);
-	imprimir_matriz(m);
 	return 0;
 }
 
