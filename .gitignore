@@ -1,4 +1,5 @@
 # Tomado de https://github.com/github/gitignore/blob/main/C.gitignore
+*.exe
 
 # Prerequisites
 *.d

@@ -38,5 +38,5 @@ Matriz *rellenar_matriz();
 void limpiar_matriz(Matriz *matrizP);
 Fila *copiar_fila(Fila *src, Fila *dest);
 void imprimir_matriz(Matriz *matrizP);
-int obt_elemento(int i, int j, matriz *matrizP);
-Matriz *asign_elemento(int i, int j, int elemento, matriz *matrizP);
+int obt_elemento(int i, int j, Matriz *matrizP);
+Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP);
