@@ -3,15 +3,29 @@
 #include "matriz.h"
 
 #define MIN(a, b) (a < b) ? a : b
+#define MIN_COL(c1, c2) (c1->id < c2->id) ? c1 : c2
 
 
 /*
  * Prototipos de funciones solicitadas para el proyecto
  */
-Matriz *sumar(Matriz *m1, Matriz *m2);
+Matriz *sumar(const Matriz *m1, const Matriz *m2);
 
 
 int main(void) {
+	Matriz *m1 = rellenar_matriz();
+	Matriz *m2 = rellenar_matriz();
+	//Matriz *m3 = rellenar_matriz();
+
+	Matriz *s12 = sumar(m1, m2);
+	//Matriz *s13 = sumar(m1, m3);
+	imprimir_matriz(s12);
+
+	limpiar_matriz(m1);
+	limpiar_matriz(m2);
+	//limpiar_matriz(m3);
+	limpiar_matriz(s12);
+	//limpiar_matriz(s13);
 	return 0;
 }
 
@@ -21,7 +35,7 @@ int main(void) {
  */
 
 // Sumar dos matrices -> Devuelve un puntero a la matriz conteniendo la suma
-Matriz *sumar(Matriz *m1, Matriz *m2) {
+Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 	// Validar argumentos
 	if (!m1 || !m2) {
 		fprintf(stderr, "No se puede sumar si alguna matriz es nula\n");
@@ -34,15 +48,18 @@ Matriz *sumar(Matriz *m1, Matriz *m2) {
 
 	// Inicializar matriz que almacena la suma y variables para el recorrido
 	Matriz *sum = nueva_matriz(m1->numFilas, m1->numColumnas);
+	sum->filas = nueva_fila(1);
 	register int filaAct = 1;
 	Fila *f1 = m1->filas, *f2 = m2->filas, *fSum = sum->filas;
-	Columna *c1, *c2, *cSum;
+	Columna *c1, *c2, *minCol, *cSum = NULL;
 
-	while (f1 != NULL && f2 != NULL) {
+	 	while (f1 != NULL && f2 != NULL) {
 		// Crear fila
 		filaAct = MIN(f1->id, f2->id);
-		if (fSum == NULL)
-			fSum = nueva_fila(filaAct);
+		if (fSum->col != NULL) {
+			fSum->next = nueva_fila(filaAct);
+			fSum = fSum->next;
+		}
 		else
 			fSum->id = filaAct;
 
@@ -59,32 +76,66 @@ Matriz *sumar(Matriz *m1, Matriz *m2) {
 		else {
 			c1 = f1->col;
 			c2 = f2->col;
-			cSum = fSum->col;
 			while (c1 != NULL && c2 != NULL) {
 				// La lógica de las comparaciones es similar a la de las filas
-				if (c1->id < c2->id) {
-					cSum = nueva_columna(c1->id, c1->valor);
-					c1 = c1->next;
-				}
-				else if (c2->id < c1->id) {
-					cSum = nueva_columna(c2->id, c2->valor);
-					c2 = c2->next;
+				minCol = MIN_COL(c1, c2);
+				if (c1->id != c2->id) {
+					if (!fSum->col) {
+						fSum->col = nueva_columna(minCol->id, minCol->valor);
+						cSum = fSum->col;
+					}
+					else {
+						cSum->next = nueva_columna(minCol->id, minCol->valor);
+						cSum = cSum->next;
+					}
+					if(minCol == c1)
+						c1 = c1->next;
+					else
+						c2 = c2->next;
 				}
 				else {
 					// No se debe agregar la columna si los elementos suman 0
 					int sumaCols = c1->valor + c2->valor;
-					if (sumaCols)
-						cSum = nueva_columna(c1->id, sumaCols);
+					if (sumaCols) {
+						if (!fSum->col) {
+							fSum->col = nueva_columna(c1->id, sumaCols);
+							cSum = fSum->col;
+						}
+						else {
+							cSum->next = nueva_columna(c1->id, sumaCols);
+							cSum = cSum->next;
+						}
+					}
+					c1 = c1->next;
+					c2 = c2->next;
 				}
-				cSum = cSum->next;
+			}
+			// Agregar columnas sobrantes
+			while (c1) {
+				if (!fSum->col) {
+					fSum->col = nueva_columna(c1->id, c1->valor);
+					cSum = fSum->col;
+				}
+				else {
+					cSum->next = nueva_columna(c1->id, c1->valor);
+					cSum = cSum->next;
+				}
+				c1 = c1->next;
+			}
+			while (c2) {
+				if (!fSum->col) {
+					fSum->col = nueva_columna(c2->id, c2->valor);
+					cSum = fSum->col;
+				}
+				else {
+					cSum->next = nueva_columna(c2->id, c2->valor);
+					cSum = cSum->next;
+				}
+				c2 = c2->next;
 			}
 			f1 = f1->next;
 			f2 = f2->next;
 		}
-		// Si todas las sumas resultaron 0, no se agregaron columnas y la fila no debería estar en la lista
-		// Por lo tanto, solo se avanza el puntero si hay columnas agregadas
-		if (fSum->col != NULL)
-			fSum = fSum->next;
 	}
 
 	// Copiar filas que hayan sobrado (las listas pueden tener longitudes distintas)

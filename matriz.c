@@ -127,10 +127,16 @@ void limpiar_matriz(Matriz *matrizP) {
 
 // Copia la fila src en dest
 Fila *copiar_fila(Fila *src, Fila *dest) {
-	Columna *colSrc = src->col, *colDest = dest->col;
+	Columna *colSrc = src->col, *colDest;
 	while (colSrc) {
-		colDest = nueva_columna(colSrc->id, colSrc->valor);
-		colDest = colDest->next;
+		if (!dest->col) {
+			dest->col = nueva_columna(colSrc->id, colSrc->valor);
+			colDest = dest->col;
+		}
+		else {
+			colDest->next = nueva_columna(colSrc->id, colSrc->valor);
+			colDest = colDest->next;
+		}
 		colSrc = colSrc->next;
 	}
 	return dest;
