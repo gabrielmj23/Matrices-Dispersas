@@ -56,6 +56,20 @@ Columna *nueva_columna(int id, int val) {
 }
 
 
+// Agrega una nueva columna al principio de filaP o siguiente a colP
+void insertar_columna(Fila **filaP, Columna** colP, int id, int val) {
+	// Agrega al inicio de la fila y apunta colP a la columna insertada
+	if (!(*filaP)->col) {
+		*colP = (*filaP)->col = nueva_columna(id, val);
+	}
+	// Agrega siguiente a colP y lo apunta a la insertada
+	else {
+		(*colP)->next = nueva_columna(id, val);
+		*colP = (*colP)->next;
+	}
+}
+
+
 // Pide entradas del usuario y devuelve una matriz llena
 Matriz *rellenar_matriz() {
 	// Pedir dimensiones
@@ -85,14 +99,8 @@ Matriz *rellenar_matriz() {
 		for (j = 1; j <= c; j++) {
 			scanf("%i", &val);
 			// Solo crear columna si el valor es distinto de 0
-			if (val) {
-				if (filaAct->col == NULL)
-					colAct = filaAct->col = nueva_columna(j, val);
-				else {
-					colAct->next = nueva_columna(j, val);
-					colAct = colAct->next;
-				}
-			}
+			if (val) 
+				insertar_columna(&filaAct, &colAct, j, val);
 		}
 	}
 	if (filaAct->col == NULL) {
@@ -129,14 +137,7 @@ void limpiar_matriz(Matriz *matrizP) {
 Fila *copiar_fila(Fila *src, Fila *dest) {
 	Columna *colSrc = src->col, *colDest;
 	while (colSrc) {
-		if (!dest->col) {
-			dest->col = nueva_columna(colSrc->id, colSrc->valor);
-			colDest = dest->col;
-		}
-		else {
-			colDest->next = nueva_columna(colSrc->id, colSrc->valor);
-			colDest = colDest->next;
-		}
+		insertar_columna(&dest, &colDest, colSrc->id, colSrc->valor);
 		colSrc = colSrc->next;
 	}
 	return dest;

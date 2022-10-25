@@ -37,6 +37,7 @@ Columna *nueva_columna(int id, int val);
 Matriz *rellenar_matriz();
 void limpiar_matriz(Matriz *matrizP);
 Fila *copiar_fila(Fila *src, Fila *dest);
+void insertar_columna(Fila **filaP, Columna** colP, int id, int val);
 void imprimir_matriz(Matriz *matrizP);
 int obt_elemento(int i, int j, Matriz *matrizP);
 Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP);

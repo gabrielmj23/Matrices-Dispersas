@@ -49,19 +49,19 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 	// Inicializar matriz que almacena la suma y variables para el recorrido
 	Matriz *sum = nueva_matriz(m1->numFilas, m1->numColumnas);
 	sum->filas = nueva_fila(1);
-	register int filaAct = 1;
+	register int idFilaAct = 1;
 	Fila *f1 = m1->filas, *f2 = m2->filas, *fSum = sum->filas;
 	Columna *c1, *c2, *minCol, *cSum = NULL;
 
 	 	while (f1 != NULL && f2 != NULL) {
 		// Crear fila
-		filaAct = MIN(f1->id, f2->id);
+		idFilaAct = MIN(f1->id, f2->id);
 		if (fSum->col != NULL) {
-			fSum->next = nueva_fila(filaAct);
+			fSum->next = nueva_fila(idFilaAct);
 			fSum = fSum->next;
 		}
 		else
-			fSum->id = filaAct;
+			fSum->id = idFilaAct;
 
 		// Si alguna es menor que la otra en id, copiarla y avanzar su puntero
 		if (f1->id < f2->id) {
@@ -80,14 +80,7 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 				// La lógica de las comparaciones es similar a la de las filas
 				minCol = MIN_COL(c1, c2);
 				if (c1->id != c2->id) {
-					if (!fSum->col) {
-						fSum->col = nueva_columna(minCol->id, minCol->valor);
-						cSum = fSum->col;
-					}
-					else {
-						cSum->next = nueva_columna(minCol->id, minCol->valor);
-						cSum = cSum->next;
-					}
+					insertar_columna(&fSum, &cSum, minCol->id, minCol->valor);
 					if(minCol == c1)
 						c1 = c1->next;
 					else
@@ -96,41 +89,19 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 				else {
 					// No se debe agregar la columna si los elementos suman 0
 					int sumaCols = c1->valor + c2->valor;
-					if (sumaCols) {
-						if (!fSum->col) {
-							fSum->col = nueva_columna(c1->id, sumaCols);
-							cSum = fSum->col;
-						}
-						else {
-							cSum->next = nueva_columna(c1->id, sumaCols);
-							cSum = cSum->next;
-						}
-					}
+					if (sumaCols)
+						insertar_columna(&fSum, &cSum, c1->id, sumaCols);
 					c1 = c1->next;
 					c2 = c2->next;
 				}
 			}
 			// Agregar columnas sobrantes
 			while (c1) {
-				if (!fSum->col) {
-					fSum->col = nueva_columna(c1->id, c1->valor);
-					cSum = fSum->col;
-				}
-				else {
-					cSum->next = nueva_columna(c1->id, c1->valor);
-					cSum = cSum->next;
-				}
+				insertar_columna(&fSum, &cSum, c1->id, c1->valor);
 				c1 = c1->next;
 			}
 			while (c2) {
-				if (!fSum->col) {
-					fSum->col = nueva_columna(c2->id, c2->valor);
-					cSum = fSum->col;
-				}
-				else {
-					cSum->next = nueva_columna(c2->id, c2->valor);
-					cSum = cSum->next;
-				}
+				insertar_columna(&fSum, &cSum, c2->id, c2->valor);
 				c2 = c2->next;
 			}
 			f1 = f1->next;
