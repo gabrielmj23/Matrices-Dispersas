@@ -61,19 +61,16 @@ Columna *nueva_columna(int id, int val) {
 }
 
 
-// Agrega una nueva columna al principio de filaP o siguiente a colP
-void insertar_col_final(Fila **filaP, Columna** colP, int id, int val) {
-	// Agrega al inicio de la fila y apunta colP a la columna insertada
-	if (!(*filaP)->primeraCol) {
-		*colP = nueva_columna(id, val);
-		(*filaP)->primeraCol = (*filaP)->ultCol = *colP;
-	}
-	// Agrega siguiente a colP y lo apunta a la insertada
-	else {
-		(*colP)->next = nueva_columna(id, val);
-		*colP = (*colP)->next;
-		(*filaP)->ultCol = *colP;
-	}
+// Agrega una nueva columna a filaP siguiente a su última columna
+Fila *insertar_col_final(Fila *filaP, Columna *nuevaC) {
+	// Agrega al inicio de la fila
+	if (!filaP->primeraCol)
+		filaP->primeraCol = filaP->ultCol = nuevaC;
+
+	// Agrega al final
+	else
+		filaP->ultCol = filaP->ultCol->next = nuevaC;
+	return filaP;
 }
 
 
@@ -88,7 +85,6 @@ Matriz *rellenar_matriz() {
 	// Crear fila y columna auxiliar
 	nuevaM->filas = nueva_fila(1);
 	Fila *filaAct = nuevaM->filas;
-	Columna *colAct;
 	register int i = 1, j;
 	int val;
 
@@ -107,7 +103,7 @@ Matriz *rellenar_matriz() {
 			scanf("%i", &val);
 			// Solo crear columna si el valor es distinto de 0
 			if (val) 
-				insertar_col_final(&filaAct, &colAct, j, val);
+				filaAct = insertar_col_final(filaAct, nueva_columna(j,val));
 		}
 	}
 	if (filaAct->primeraCol == NULL) {
@@ -142,9 +138,9 @@ void limpiar_matriz(Matriz *matrizP) {
 
 // Copia la fila src en dest
 Fila *copiar_fila(Fila *src, Fila *dest) {
-	Columna *colSrc = src->primeraCol, *colDest;
+	Columna *colSrc = src->primeraCol;
 	while (colSrc) {
-		insertar_col_final(&dest, &colDest, colSrc->id, colSrc->valor);
+		dest = insertar_col_final(dest, nueva_columna(colSrc->id, colSrc->valor));
 		colSrc = colSrc->next;
 	}
 	return dest;
@@ -265,7 +261,7 @@ Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP) {
     // Si columna_aux es NULL, esta columna será la última en la fila
     if (!columna_aux)
     	fila_aux->ultCol = nColumna;
-    
+
     if (prev_col!=NULL)
     	prev_col->next=nColumna;
     else
@@ -306,7 +302,7 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 	sum->filas = nueva_fila(1);
 	register int idFilaAct = 1;
 	Fila *f1 = m1->filas, *f2 = m2->filas, *fSum = sum->filas;
-	Columna *c1, *c2, *minCol, *cSum = NULL;
+	Columna *c1, *c2, *minCol;
 
 	 	while (f1 != NULL && f2 != NULL) {
 		// Crear fila
@@ -335,7 +331,7 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 				// La lógica de las comparaciones es similar a la de las filas
 				minCol = MIN_COL(c1, c2);
 				if (c1->id != c2->id) {
-					insertar_col_final(&fSum, &cSum, minCol->id, minCol->valor);
+					fSum = insertar_col_final(fSum, nueva_columna(minCol->id, minCol->valor));
 					if(minCol == c1)
 						c1 = c1->next;
 					else
@@ -345,18 +341,18 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 					// No se debe agregar la columna si los elementos suman 0
 					int sumaCols = c1->valor + c2->valor;
 					if (sumaCols)
-						insertar_col_final(&fSum, &cSum, c1->id, sumaCols);
+						fSum = insertar_col_final(fSum, nueva_columna(c1->id, sumaCols));
 					c1 = c1->next;
 					c2 = c2->next;
 				}
 			}
 			// Agregar columnas sobrantes
 			while (c1) {
-				insertar_col_final(&fSum, &cSum, c1->id, c1->valor);
+				fSum = insertar_col_final(fSum, nueva_columna(c1->id, c1->valor));
 				c1 = c1->next;
 			}
 			while (c2) {
-				insertar_col_final(&fSum, &cSum, c2->id, c2->valor);
+				fSum = insertar_col_final(fSum, nueva_columna(c2->id, c2->valor));
 				c2 = c2->next;
 			}
 			f1 = f1->next;

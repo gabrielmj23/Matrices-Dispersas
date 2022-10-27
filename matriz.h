@@ -41,7 +41,7 @@ void limpiar_matriz(Matriz *matrizP);
 
 // Utilidades
 Fila *copiar_fila(Fila *src, Fila *dest);
-void insertar_col_final(Fila **filaP, Columna** colP, int id, int val);
+Fila *insertar_col_final(Fila *filaP, Columna *nuevaC);
 
 // Funciones básicas
 void imprimir_matriz(Matriz *matrizP);
