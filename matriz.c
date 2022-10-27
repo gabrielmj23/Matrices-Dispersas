@@ -414,3 +414,56 @@ Matriz *transponer(const Matriz *matrizP) {
 
 	return mTrans;
 }
+
+
+// Multiplica m1 y m2 y devuelve un apuntador a la matriz producto
+Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2) {
+	if (!m1 || !m2) {
+		fprintf(stderr, "No se pueden multiplicar matrices si alguna es nula\n");
+		exit(1);
+	}
+	if (m1->numColumnas != m2->numFilas) {
+		fprintf(stderr, "La primera matriz debe tener tantas columnas como filas tenga la segunda\n");
+		exit(1);
+	}
+
+	// Se usa la transpuesta de m2 para acceso rápido por filas
+	Matriz *transM2 = transponer(m2);
+
+	Matriz *mult = nueva_matriz(m1->numFilas, m2->numColumnas);
+	mult->filas = nueva_fila(m1->filas->id);
+	Fila *filaM1, *filaM2, *fProd = mult->filas;
+	Columna *colM1, *colM2;
+	register int prod;
+	// Para cada fila en m1
+	for (filaM1 = m1->filas; filaM1 != NULL; filaM1 = filaM1->next) {
+		if (!fProd->primeraCol)
+			fProd->id = filaM1->id;
+		else {
+			fProd->next = nueva_fila(filaM1->id);
+			fProd = fProd->next;
+		}
+		// Para cada fila en transM2
+		for (filaM2 = transM2->filas; filaM2 != NULL; filaM2 = filaM2->next) {
+			colM1 = filaM1->primeraCol;
+			colM2 = filaM2->primeraCol;
+			prod = 0;
+			while (colM1 && colM2) {
+				if (colM1->id < colM2->id) 
+					colM1 = colM1->next;
+				else if (colM2->id < colM1->id)
+					colM2 = colM2->next;
+				else {
+					prod += colM2->valor * colM1->valor;
+					colM1 = colM1->next;
+					colM2 = colM2->next;
+				}
+			}
+			if (prod)
+				fProd = insertar_col_final(fProd, nueva_columna(filaM2->id, prod));
+		}
+	}
+
+	limpiar_matriz(transM2);
+	return mult;
+}

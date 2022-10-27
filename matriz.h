@@ -51,3 +51,4 @@ Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP);
 // Funciones de aritmética de matrices
 Matriz *sumar(const Matriz *m1, const Matriz *m2);
 Matriz *transponer(const Matriz *matrizP);
+Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2);
