@@ -16,7 +16,8 @@ Columna;
 typedef struct fila
 {
 	int id;
-	Columna *col;
+	// Apuntadores a la primera y última columna
+	Columna *primeraCol, *ultCol;
 	struct fila *next;
 }
 Fila;
@@ -40,7 +41,7 @@ void limpiar_matriz(Matriz *matrizP);
 
 // Utilidades
 Fila *copiar_fila(Fila *src, Fila *dest);
-void insertar_columna(Fila **filaP, Columna** colP, int id, int val);
+void insertar_col_final(Fila **filaP, Columna** colP, int id, int val);
 
 // Funciones básicas
 void imprimir_matriz(Matriz *matrizP);
