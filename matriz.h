@@ -31,13 +31,21 @@ typedef struct matriz
 Matriz;
 
 
+// Funciones de creación y liberación de matrices
 Matriz *nueva_matriz(int nFilas, int nCols);
 Fila *nueva_fila(int id);
 Columna *nueva_columna(int id, int val);
 Matriz *rellenar_matriz();
 void limpiar_matriz(Matriz *matrizP);
+
+// Utilidades
 Fila *copiar_fila(Fila *src, Fila *dest);
 void insertar_columna(Fila **filaP, Columna** colP, int id, int val);
+
+// Funciones básicas
 void imprimir_matriz(Matriz *matrizP);
 int obt_elemento(int i, int j, Matriz *matrizP);
 Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP);
+
+// Funciones de aritmética de matrices
+Matriz *sumar(const Matriz *m1, const Matriz *m2);
