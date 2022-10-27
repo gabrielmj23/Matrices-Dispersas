@@ -373,3 +373,44 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 	}
 	return sum;
 }
+
+
+// Transponer una matriz -> Devuelve un puntero a una nueva matriz conteniendo la transpuesta
+Matriz *transponer(const Matriz *matrizP) {
+	if (!matrizP) {
+		fprintf(stderr, "No se puede transponer una matriz nula\n");
+		exit(1);
+	}
+
+	Matriz *mTrans = nueva_matriz(matrizP->numColumnas, matrizP->numFilas);
+	Fila *filaAct, *filaPrev, *filaAux;
+	Columna *colAct;
+	register int idCol;
+	// Para cada fila de la matriz original
+	for (filaAct = matrizP->filas; filaAct != NULL; filaAct = filaAct->next)
+		// Para cada columna de esta fila
+		for (colAct = filaAct->primeraCol; colAct != NULL; colAct = colAct->next) {
+			idCol = colAct->id;
+			// Buscar en la transpuesta la fila correspondiente al id de la columna
+			filaPrev = NULL;
+			for (filaAux = mTrans->filas; filaAux != NULL && filaAux->id <= idCol; filaAux = filaAux->next)
+				filaPrev = filaAux;
+			// Si se consiguió la fila, quedará en filaPrev
+			// Entonces, se inserta al final la columna correspondiente
+			if (filaPrev && filaPrev->id == idCol)
+				filaPrev = insertar_col_final(filaPrev, nueva_columna(filaAct->id, colAct->valor));
+
+			// Si no se consiguió la fila, crearla entre filaPrev y filaAux
+			else {
+				Fila *nFila = nueva_fila(idCol);
+				if (filaPrev)
+					filaPrev->next = nFila;
+				else
+					mTrans->filas = nFila;
+				nFila->next = filaAux;
+				nFila = insertar_col_final(nFila, nueva_columna(filaAct->id, colAct->valor));
+			}
+		}
+
+	return mTrans;
+}
