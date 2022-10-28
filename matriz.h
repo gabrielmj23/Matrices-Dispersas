@@ -52,3 +52,4 @@ Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP);
 Matriz *sumar(const Matriz *m1, const Matriz *m2);
 Matriz *transponer(const Matriz *matrizP);
 Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2);
+Matriz *escalar_matriz(Matriz *matrizP,int escalar);

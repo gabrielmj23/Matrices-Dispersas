@@ -102,7 +102,7 @@ Matriz *rellenar_matriz() {
 		for (j = 1; j <= c; j++) {
 			scanf("%i", &val);
 			// Solo crear columna si el valor es distinto de 0
-			if (val) 
+			if (val)
 				filaAct = insertar_col_final(filaAct, nueva_columna(j,val));
 		}
 	}
@@ -149,7 +149,7 @@ Fila *copiar_fila(Fila *src, Fila *dest) {
 
 // Muestra en pantalla la matriz apuntada por matrizP
 void imprimir_matriz(Matriz *matrizP) {
-	if (!matrizP || !matrizP->filas) {
+	if (!matrizP) {
 		printf("La matriz se encuentra vacía\n");
 		return;
 	}
@@ -280,7 +280,7 @@ Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP) {
   	prev_fila->next=nFila;
   else
   	matrizP->filas = nFila;
-  
+
   return matrizP;
 }
 
@@ -449,7 +449,7 @@ Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2) {
 			colM2 = filaM2->primeraCol;
 			prod = 0;
 			while (colM1 && colM2) {
-				if (colM1->id < colM2->id) 
+				if (colM1->id < colM2->id)
 					colM1 = colM1->next;
 				else if (colM2->id < colM1->id)
 					colM2 = colM2->next;
@@ -466,4 +466,29 @@ Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2) {
 
 	limpiar_matriz(transM2);
 	return mult;
+}
+
+Matriz *escalar_matriz(Matriz *matrizP,int escalar) {
+  if (!matrizP)
+    return matrizP;
+
+  if (!escalar) {
+		Matriz *matriz_aux=nueva_matriz(matrizP->numFilas,matrizP->numColumnas);
+    limpiar_matriz(matrizP);
+    return matriz_aux;
+  }
+
+  if (escalar==1)
+    return matrizP;
+
+  Fila *fila_aux=matrizP->filas;
+  Columna *columna_aux;
+  //Recorrer todas las columnas de cada fila y multiplicar el valor por el escalar
+  for (; fila_aux!=NULL ; fila_aux=fila_aux->next){
+    columna_aux=fila_aux->primeraCol;
+    for(;columna_aux!=NULL ; columna_aux=columna_aux->next)
+      columna_aux->valor=columna_aux->valor * escalar;
+  }
+
+  return matrizP;
 }
