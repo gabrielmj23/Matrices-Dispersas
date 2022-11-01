@@ -44,7 +44,7 @@ Fila *copiar_fila(Fila *src, Fila *dest);
 Fila *insertar_col_final(Fila *filaP, Columna *nuevaC);
 
 // Funciones básicas
-void imprimir_matriz(Matriz *matrizP);
+void imprimir_matriz(Matriz *matrizP, FILE *fp);
 int obt_elemento(int i, int j, Matriz *matrizP);
 Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP);
 

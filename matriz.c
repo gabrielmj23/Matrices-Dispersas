@@ -75,7 +75,7 @@ Fila *insertar_col_final(Fila *filaP, Columna *nuevaC) {
 
 
 // Pide entradas del usuario y devuelve una matriz llena
-// El modo 'c' indica entrada por consola -> se imprimen salidas que ayudan a ingresar la matriz
+// El modo 'c' indica entrada por consola --> se imprimen salidas que ayudan a ingresar la matriz
 Matriz *rellenar_matriz(FILE *fp, char modo) {
 	// Pedir dimensiones
 	int numF, numC;
@@ -95,7 +95,7 @@ Matriz *rellenar_matriz(FILE *fp, char modo) {
 	int i, j, v;
 	if (modo == 'c')
 		printf("Ingrese cada elemento no nulo con su fila, columna y valor:\n");
-	
+
 	for (elem = 0; elem < e; elem++) {
 		fscanf(fp, "%i %i %i", &i, &j, &v);
 		nuevaM = asignar_elemento(i, j, v, nuevaM);
@@ -111,13 +111,17 @@ void limpiar_matriz(Matriz *matrizP) {
 	Fila *filaAct = matrizP->filas, *filaTmp;
 	Columna *colAct, *colTmp;
 
+	// Para cada fila
 	while (filaAct) {
+		// Para cada columna
 		colAct = filaAct->primeraCol;
 		while (colAct) {
+			// Se guarda el apuntador al siguiente y se elimina el actual
 			colTmp = colAct->next;
 			free(colAct);
 			colAct = colTmp;
 		}
+		// Liberar la fila y avanzar
 		filaTmp = filaAct->next;
 		free(filaAct);
 		filaAct = filaTmp;
@@ -138,9 +142,9 @@ Fila *copiar_fila(Fila *src, Fila *dest) {
 
 
 // Muestra en pantalla la matriz apuntada por matrizP
-void imprimir_matriz(Matriz *matrizP) {
+void imprimir_matriz(Matriz *matrizP, FILE *fp) {
 	if (!matrizP) {
-		printf("La matriz se encuentra vacía\n");
+		fprintf(fp, "La matriz no existe\n");
 		return;
 	}
 
@@ -148,27 +152,30 @@ void imprimir_matriz(Matriz *matrizP) {
 	Fila *filaAct = matrizP->filas;
 	Columna *colAct;
 
-	while (filaAct != NULL) {
+	while (filaAct) {
 		// Si no se han escrito filas entre la última y la actual, estarán llenas de 0
 		for (; i < filaAct->id; i++) {
 			for (j = 1; j <= matrizP->numColumnas; j++)
-				printf("0 ");
-			printf("\n");
+				fprintf(fp, "0 ");
+			fprintf(fp, "\n");
 		}
 
 		// Imprimir fila actual
 		j = 1;
 		colAct = filaAct->primeraCol;
 		while (colAct) {
+			// Imprimir columnas nulas antes de la actual
 			for (; j < colAct->id; j++)
-				printf("0 ");
-			printf("%i ", colAct->valor);
+				fprintf(fp, "0 ");
+			// Imprimir columna y avanzar
+			fprintf(fp, "%i ", colAct->valor);
 			colAct = colAct->next;
-			j++;
+			++j;
 		}
+		// Imprimir columnas nulas sobrantes
 		for (; j <= matrizP->numColumnas; j++)
-			printf("0 ");
-		printf("\n");
+			fprintf(fp, "0 ");
+		fprintf(fp, "\n");
 		++i;
 		filaAct = filaAct->next;
 	}
@@ -176,25 +183,27 @@ void imprimir_matriz(Matriz *matrizP) {
 	// Escribir filas restantes que deberían estar después de la última que aparece en la lista
 	for (; i <= matrizP->numFilas; i++) {
 		for (j = 1; j <= matrizP->numColumnas; j++)
-			printf("0 ");
-		printf("\n");
+			fprintf(fp, "0 ");
+		fprintf(fp, "\n");
 	}
-	printf("\n");
+	fprintf(fp, "\n");
 }
 
 
 // Obtener un elemento de la matriz
 int obt_elemento(int i, int j, Matriz *matrizP) {
   // Revisar si la matriz existe
-  if (matrizP==NULL){
+  if (!matrizP){
     fprintf(stderr, "obt_elemento: La matriz no existe\n");
     exit(1);
   }
-  // Revisar si la ubicacion esta en la matriz
-  if (i>matrizP->numFilas || j>matrizP->numColumnas){
+
+  // Revisar si las coordenadas son validas
+  if (i>matrizP->numFilas || j>matrizP->numColumnas || i<1 || j < 1) {
     fprintf(stderr, "obt_elemento: El elemento esta fuera de las dimensiones de la matriz\n");
     exit(1);
   }
+
   // Buscar la fila
   Fila *fila_aux=matrizP->filas;
   for(; fila_aux!=NULL && fila_aux->id<i; fila_aux=fila_aux->next);
@@ -203,13 +212,12 @@ int obt_elemento(int i, int j, Matriz *matrizP) {
   if (fila_aux && fila_aux->id==i) {
     Columna *columna_aux=fila_aux->primeraCol;
     for(; columna_aux!=NULL && columna_aux->id<j; columna_aux=columna_aux->next);
+    
+    //Si encuentra la columna, devuelve el valor
     if(columna_aux && columna_aux->id==j)
-      //Si encuentra la columna, devuelve el valor
       return columna_aux->valor;
-    //Si no encuentra el id de la columna, el valor será 0
-    return 0;
   }
-  //Si no encuentra el id de la fila el valor será 0
+  //Si no encuentra el id de la columna o de la fila el valor será 0
   return 0;
 }
 
@@ -217,26 +225,24 @@ int obt_elemento(int i, int j, Matriz *matrizP) {
 // Asignar valor a un elemento de la matriz
 Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP) {
   // Revisar si la matriz existe
-  if (matrizP==NULL){
+  if (!matrizP){
     fprintf(stderr, "asignar_elemento: La matriz no existe\n");
     exit(1);
   }
   // Revisar si la ubicacion esta en la matriz
-  if (i>matrizP->numFilas || j>matrizP->numColumnas){
+  if (i>matrizP->numFilas || j>matrizP->numColumnas || i<1 || j<1){
     fprintf(stderr, "asignar_elemento: El elemento esta fuera de las dimensiones de la matriz\n");
     exit(1);
   }
 
   // Buscar la fila
-  Fila *fila_aux=matrizP->filas;
-  Fila *prev_fila=NULL;
+  Fila *fila_aux=matrizP->filas, *prev_fila=NULL;
   for (; fila_aux!=NULL && fila_aux->id<i; fila_aux=fila_aux->next)
     prev_fila=fila_aux;
 
   // Si encuentra la fila, empieza a buscar la columna
   if (fila_aux && fila_aux->id==i) {
-    Columna *columna_aux=fila_aux->primeraCol;
-    Columna *prev_col=NULL;
+    Columna *columna_aux=fila_aux->primeraCol, *prev_col=NULL;
     for (; columna_aux!=NULL && columna_aux->id<j; columna_aux=columna_aux->next)
       prev_col=columna_aux;
 
@@ -245,6 +251,7 @@ Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP) {
       columna_aux->valor=elemento;
       return matrizP;
     }
+
     // Si no encuentra el id de la columna la crea
     Columna *nColumna = nueva_columna(j,elemento);
     nColumna->next=columna_aux;
@@ -257,8 +264,8 @@ Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP) {
     else
     	fila_aux->primeraCol = nColumna;
     return matrizP;
-
   }
+  
   // Si no encuentra el id crea la fila y la columna
   Fila *nFila = nueva_fila(i);
   Columna *nColumna = nueva_columna(j,elemento);
