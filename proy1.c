@@ -17,7 +17,7 @@ int main(void) {
 
 	do{
         system("clear");
-        printf("1.Obtener elemento\n2.Asignar elemento\n3.Sumar\n4.Producto por escalar\n5.Producto de matrices\n6.Transponer matriz\n7.Crear e imprimir matriz\n");
+        printf("1.Obtener elemento\n2.Asignar elemento\n3.Sumar matrices\n4.Producto por escalar\n5.Producto de matrices\n6.Transponer matriz\n7.Crear e imprimir matriz\n8.Salir\n");
         scanf("%d",&opc);
 
         switch (opc){
@@ -36,10 +36,16 @@ int main(void) {
             case 5:
                 producto();
                 break;
+            case 6:
+                transp();
+                break;
+            case 7:
+                rellenar_imprimir();
+                break;
         }
 
 	}
-	while(opc!=9);
+	while(opc!=8);
 	return 0;
 }
 
