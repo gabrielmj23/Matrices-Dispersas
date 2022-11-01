@@ -36,7 +36,7 @@ Matriz;
 Matriz *nueva_matriz(int nFilas, int nCols);
 Fila *nueva_fila(int id);
 Columna *nueva_columna(int id, int val);
-Matriz *rellenar_matriz();
+Matriz *rellenar_matriz(FILE *fp, char modo);
 void limpiar_matriz(Matriz *matrizP);
 
 // Utilidades

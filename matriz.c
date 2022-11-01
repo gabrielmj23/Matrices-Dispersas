@@ -75,40 +75,30 @@ Fila *insertar_col_final(Fila *filaP, Columna *nuevaC) {
 
 
 // Pide entradas del usuario y devuelve una matriz llena
-Matriz *rellenar_matriz() {
+// El modo 'c' indica entrada por consola -> se imprimen salidas que ayudan a ingresar la matriz
+Matriz *rellenar_matriz(FILE *fp, char modo) {
 	// Pedir dimensiones
-	int f, c;
-	printf("Ingrese las dimensiones de la matriz (filas y columnas): ");
-	scanf("%i %i", &f, &c);
+	int numF, numC;
+	if (modo == 'c')
+		printf("Ingrese las dimensiones de la matriz (filas y columnas): ");
+	fscanf(fp, "%i %i", &numF, &numC);
 
-	Matriz *nuevaM = nueva_matriz(f, c);
-	// Crear fila y columna auxiliar
-	nuevaM->filas = nueva_fila(1);
-	Fila *filaAct = nuevaM->filas;
-	register int i = 1, j;
-	int val;
+	// Pedir cantidad de elementos
+	int e;
+	if (modo == 'c')
+		printf("Ingrese la cantidad de elementos no nulos: ");
+	fscanf(fp, "%i", &e);
 
-	// Pedir filas y columnas
-	for (; i <= f; i++) {
-		// Avanzar puntero de fila solo si ya se utilizó
-		if (filaAct->primeraCol == NULL)
-			filaAct->id = i;
-		else {
-			filaAct->next = nueva_fila(i);
-			filaAct = filaAct->next;
-		}
-
-		printf("Fila %i: ", i);
-		for (j = 1; j <= c; j++) {
-			scanf("%i", &val);
-			// Solo crear columna si el valor es distinto de 0
-			if (val)
-				filaAct = insertar_col_final(filaAct, nueva_columna(j,val));
-		}
-	}
-	if (filaAct->primeraCol == NULL) {
-		filaAct = NULL;
-		free(filaAct);
+	Matriz *nuevaM = nueva_matriz(numF, numC);
+	// Pedir cada elemento de la matriz con sus coordenadas
+	register int elem;
+	int i, j, v;
+	if (modo == 'c')
+		printf("Ingrese cada elemento no nulo con su fila, columna y valor:\n");
+	
+	for (elem = 0; elem < e; elem++) {
+		fscanf(fp, "%i %i %i", &i, &j, &v);
+		nuevaM = asignar_elemento(i, j, v, nuevaM);
 	}
 	return nuevaM;
 }
@@ -462,6 +452,11 @@ Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2) {
 			if (prod)
 				fProd = insertar_col_final(fProd, nueva_columna(filaM2->id, prod));
 		}
+	}
+	// Limpiar ultima fila si esta vacia
+	if (!fProd->primeraCol) {
+		fProd = NULL;
+		free(fProd);
 	}
 
 	limpiar_matriz(transM2);
