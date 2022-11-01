@@ -7,7 +7,7 @@
 typedef struct columna
 {
 	int id;
-	int valor;
+	double valor;
 	struct columna *next;
 }
 Columna;
@@ -35,7 +35,7 @@ Matriz;
 // Funciones de creación y liberación de matrices
 Matriz *nueva_matriz(int nFilas, int nCols);
 Fila *nueva_fila(int id);
-Columna *nueva_columna(int id, int val);
+Columna *nueva_columna(int id, double val);
 Matriz *rellenar_matriz(FILE *fp, char modo);
 void limpiar_matriz(Matriz *matrizP);
 
@@ -44,12 +44,12 @@ Fila *copiar_fila(Fila *src, Fila *dest);
 Fila *insertar_col_final(Fila *filaP, Columna *nuevaC);
 
 // Funciones básicas
-void imprimir_matriz(Matriz *matrizP, FILE *fp);
+void imprimir_matriz(const Matriz *matrizP, FILE *fp);
 int obt_elemento(int i, int j, Matriz *matrizP);
-Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP);
+Matriz *asignar_elemento(int i, int j, double elemento, Matriz *matrizP);
 
 // Funciones de aritmética de matrices
 Matriz *sumar(const Matriz *m1, const Matriz *m2);
 Matriz *transponer(const Matriz *matrizP);
 Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2);
-Matriz *escalar_matriz(Matriz *matrizP,int escalar);
+Matriz *escalar_matriz(Matriz *matrizP, double escalar);

@@ -44,7 +44,7 @@ Fila *nueva_fila(int id) {
 
 
 // Crea una nueva columna
-Columna *nueva_columna(int id, int val) {
+Columna *nueva_columna(int id, double val) {
 	Columna *c;
 
 	// Reservar memoria y verificar errores
@@ -92,12 +92,13 @@ Matriz *rellenar_matriz(FILE *fp, char modo) {
 	Matriz *nuevaM = nueva_matriz(numF, numC);
 	// Pedir cada elemento de la matriz con sus coordenadas
 	register int elem;
-	int i, j, v;
+	int i, j;
+	double v;
 	if (modo == 'c')
 		printf("Ingrese cada elemento no nulo con su fila, columna y valor:\n");
 
 	for (elem = 0; elem < e; elem++) {
-		fscanf(fp, "%i %i %i", &i, &j, &v);
+		fscanf(fp, "%i %i %lf", &i, &j, &v);
 		nuevaM = asignar_elemento(i, j, v, nuevaM);
 	}
 	return nuevaM;
@@ -142,7 +143,7 @@ Fila *copiar_fila(Fila *src, Fila *dest) {
 
 
 // Muestra en pantalla la matriz apuntada por matrizP
-void imprimir_matriz(Matriz *matrizP, FILE *fp) {
+void imprimir_matriz(const Matriz *matrizP, FILE *fp) {
 	if (!matrizP) {
 		fprintf(fp, "La matriz no existe\n");
 		return;
@@ -168,7 +169,7 @@ void imprimir_matriz(Matriz *matrizP, FILE *fp) {
 			for (; j < colAct->id; j++)
 				fprintf(fp, "0 ");
 			// Imprimir columna y avanzar
-			fprintf(fp, "%i ", colAct->valor);
+			fprintf(fp, "%.3f ", colAct->valor);
 			colAct = colAct->next;
 			++j;
 		}
@@ -223,7 +224,7 @@ int obt_elemento(int i, int j, Matriz *matrizP) {
 
 
 // Asignar valor a un elemento de la matriz
-Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP) {
+Matriz *asignar_elemento(int i, int j, double elemento, Matriz *matrizP) {
   // Revisar si la matriz existe
   if (!matrizP){
     fprintf(stderr, "asignar_elemento: La matriz no existe\n");
@@ -265,7 +266,7 @@ Matriz *asignar_elemento(int i, int j, int elemento, Matriz *matrizP) {
     	fila_aux->primeraCol = nColumna;
     return matrizP;
   }
-  
+
   // Si no encuentra el id crea la fila y la columna
   Fila *nFila = nueva_fila(i);
   Columna *nColumna = nueva_columna(j,elemento);
@@ -301,10 +302,10 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 	Fila *f1 = m1->filas, *f2 = m2->filas, *fSum = sum->filas;
 	Columna *c1, *c2, *minCol;
 
-	 	while (f1 != NULL && f2 != NULL) {
+	 	while (f1 && f2) {
 		// Crear fila
 		idFilaAct = MIN(f1->id, f2->id);
-		if (fSum->primeraCol != NULL) {
+		if (fSum->primeraCol) {
 			fSum->next = nueva_fila(idFilaAct);
 			fSum = fSum->next;
 		}
@@ -324,7 +325,7 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 		else {
 			c1 = f1->primeraCol;
 			c2 = f2->primeraCol;
-			while (c1 != NULL && c2 != NULL) {
+			while (c1 && c2) {
 				// La lógica de las comparaciones es similar a la de las filas
 				minCol = MIN_COL(c1, c2);
 				if (c1->id != c2->id) {
@@ -336,7 +337,7 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 				}
 				else {
 					// No se debe agregar la columna si los elementos suman 0
-					int sumaCols = c1->valor + c2->valor;
+					double sumaCols = c1->valor + c2->valor;
 					if (sumaCols)
 						fSum = insertar_col_final(fSum, nueva_columna(c1->id, sumaCols));
 					c1 = c1->next;
@@ -431,7 +432,7 @@ Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2) {
 	mult->filas = nueva_fila(m1->filas->id);
 	Fila *filaM1, *filaM2, *fProd = mult->filas;
 	Columna *colM1, *colM2;
-	register int prod;
+	register double prod;
 	// Para cada fila en m1
 	for (filaM1 = m1->filas; filaM1 != NULL; filaM1 = filaM1->next) {
 		if (!fProd->primeraCol)
@@ -444,8 +445,10 @@ Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2) {
 		for (filaM2 = transM2->filas; filaM2 != NULL; filaM2 = filaM2->next) {
 			colM1 = filaM1->primeraCol;
 			colM2 = filaM2->primeraCol;
-			prod = 0;
+			prod = 0.0;
 			while (colM1 && colM2) {
+				// Si no coinciden en id, avanzo la columna menor
+				// Si coinciden, multiplico y acumulo en el producto
 				if (colM1->id < colM2->id)
 					colM1 = colM1->next;
 				else if (colM2->id < colM1->id)
@@ -456,6 +459,7 @@ Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2) {
 					colM2 = colM2->next;
 				}
 			}
+			// Solo agregar producto a la matriz producto si es distinto de 0
 			if (prod)
 				fProd = insertar_col_final(fProd, nueva_columna(filaM2->id, prod));
 		}
@@ -470,18 +474,16 @@ Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2) {
 	return mult;
 }
 
-Matriz *escalar_matriz(Matriz *matrizP,int escalar) {
-  if (!matrizP)
+Matriz *escalar_matriz(Matriz *matrizP, double escalar) {
+  if (!matrizP || escalar == 1)
     return matrizP;
 
+  // Multiplicar por 0 vacia la matriz
   if (!escalar) {
 		Matriz *matriz_aux=nueva_matriz(matrizP->numFilas,matrizP->numColumnas);
     limpiar_matriz(matrizP);
     return matriz_aux;
   }
-
-  if (escalar==1)
-    return matrizP;
 
   Fila *fila_aux=matrizP->filas;
   Columna *columna_aux;

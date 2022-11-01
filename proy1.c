@@ -3,9 +3,11 @@
 #include "matriz.h"
 
 int main(void) {
-	Matriz *m = rellenar_matriz(stdin, 'c');
+	Matriz *m1 = rellenar_matriz(stdin, 'c');
+	Matriz *m2 = rellenar_matriz(stdin, 'c');
 	FILE *fp = fopen("matrizOut.txt", "w");
-	imprimir_matriz(m, fp);
+	Matriz *sm = sumar(m1, m2);
+	imprimir_matriz(sm, stdout);
 	fclose(fp);
 	return 0;
 }
