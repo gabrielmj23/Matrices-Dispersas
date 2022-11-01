@@ -2,152 +2,168 @@
 #include <stdlib.h>
 #include "matriz.h"
 
-#define MIN(a, b) (a < b) ? a : b
-#define MIN_COL(c1, c2) (c1->id < c2->id) ? c1 : c2
-
-
-/*
- * Prototipos de funciones solicitadas para el proyecto
- */
-Matriz *sumar(const Matriz *m1, const Matriz *m2);
-
-
 int main(void) {
-	Matriz *m1 = rellenar_matriz();
-	Matriz *m2 = rellenar_matriz();
-	//Matriz *m3 = rellenar_matriz();
-
-	Matriz *s12 = sumar(m1, m2);
-	//Matriz *s13 = sumar(m1, m3);
-	imprimir_matriz(s12);
-
-	limpiar_matriz(m1);
-	limpiar_matriz(m2);
-	//limpiar_matriz(m3);
-	limpiar_matriz(s12);
-	//limpiar_matriz(s13);
+	Matriz *m1 = rellenar_matriz(stdin, 'c');
+	Matriz *m2 = rellenar_matriz(stdin, 'c');
+	FILE *fp = fopen("matrizOut.txt", "w");
+	Matriz *sm = sumar(m1, m2);
+	imprimir_matriz(sm, stdout);
+	fclose(fp);
 	return 0;
 }
 
+Matriz *modo_rellenar(){
+    char modo='0';
+    char archivo[100];
 
-/*
- * Implementación de funciones solicitadas para el proyecto
- */
+    printf("Ingrese el modo de creacion de matriz. 'f' por archivos, 'c' por consola\n");
+    scanf("%c",&modo);
+    while (modo!='c' || modo!='f'){
+        printf("Modo invalido,'f' por archivos, 'c' por consola\n ");
+        scanf("%c",&modo);
+    }
 
-// Sumar dos matrices -> Devuelve un puntero a la matriz conteniendo la suma
-Matriz *sumar(const Matriz *m1, const Matriz *m2) {
-	// Validar argumentos
-	if (!m1 || !m2) {
-		fprintf(stderr, "No se puede sumar si alguna matriz es nula\n");
-		exit(1);
-	}
-	if (m1->numFilas != m2->numFilas || m1->numColumnas != m2->numColumnas) {
-		fprintf(stderr, "No se puede sumar si las matrices tienen distintas dimensiones\n");
-		exit(1);
-	}
+    Matriz *m;
+    if (modo=='f'){
+        printf("Ingrese el archivo\n");
+        scanf("%s",&archivo);
+        FILE* fp=fopen(archivo,"r");
+        if (!fp){
+           m=rellenar_matriz(fp,modo);
+           fclose(fp);
+        }
+        return m;
+    }
 
-	// Inicializar matriz que almacena la suma y variables para el recorrido
-	Matriz *sum = nueva_matriz(m1->numFilas, m1->numColumnas);
-	sum->filas = nueva_fila(1);
-	register int filaAct = 1;
-	Fila *f1 = m1->filas, *f2 = m2->filas, *fSum = sum->filas;
-	Columna *c1, *c2, *minCol, *cSum = NULL;
+    if (modo=='c'){
+        m=rellenar_matriz(stdin, modo);
+        return m;
+    }
 
-	 	while (f1 != NULL && f2 != NULL) {
-		// Crear fila
-		filaAct = MIN(f1->id, f2->id);
-		if (fSum->col != NULL) {
-			fSum->next = nueva_fila(filaAct);
-			fSum = fSum->next;
-		}
-		else
-			fSum->id = filaAct;
-
-		// Si alguna es menor que la otra en id, copiarla y avanzar su puntero
-		if (f1->id < f2->id) {
-			fSum = copiar_fila(f1, fSum);
-			f1 = f1->next;
-		}
-		else if (f2->id < f1->id) {
-			fSum = copiar_fila(f2, fSum);
-			f2 = f2->next;
-		}
-		// Si son iguales, recorrer columna a columna y sumar cuando sea posible
-		else {
-			c1 = f1->col;
-			c2 = f2->col;
-			while (c1 != NULL && c2 != NULL) {
-				// La lógica de las comparaciones es similar a la de las filas
-				minCol = MIN_COL(c1, c2);
-				if (c1->id != c2->id) {
-					if (!fSum->col) {
-						fSum->col = nueva_columna(minCol->id, minCol->valor);
-						cSum = fSum->col;
-					}
-					else {
-						cSum->next = nueva_columna(minCol->id, minCol->valor);
-						cSum = cSum->next;
-					}
-					if(minCol == c1)
-						c1 = c1->next;
-					else
-						c2 = c2->next;
-				}
-				else {
-					// No se debe agregar la columna si los elementos suman 0
-					int sumaCols = c1->valor + c2->valor;
-					if (sumaCols) {
-						if (!fSum->col) {
-							fSum->col = nueva_columna(c1->id, sumaCols);
-							cSum = fSum->col;
-						}
-						else {
-							cSum->next = nueva_columna(c1->id, sumaCols);
-							cSum = cSum->next;
-						}
-					}
-					c1 = c1->next;
-					c2 = c2->next;
-				}
-			}
-			// Agregar columnas sobrantes
-			while (c1) {
-				if (!fSum->col) {
-					fSum->col = nueva_columna(c1->id, c1->valor);
-					cSum = fSum->col;
-				}
-				else {
-					cSum->next = nueva_columna(c1->id, c1->valor);
-					cSum = cSum->next;
-				}
-				c1 = c1->next;
-			}
-			while (c2) {
-				if (!fSum->col) {
-					fSum->col = nueva_columna(c2->id, c2->valor);
-					cSum = fSum->col;
-				}
-				else {
-					cSum->next = nueva_columna(c2->id, c2->valor);
-					cSum = cSum->next;
-				}
-				c2 = c2->next;
-			}
-			f1 = f1->next;
-			f2 = f2->next;
-		}
-	}
-
-	// Copiar filas que hayan sobrado (las listas pueden tener longitudes distintas)
-	while (f1) {
-		fSum = copiar_fila(f1, nueva_fila(f1->id));
-		fSum = fSum->next;
-		f1 = f1->next;
-	}
-	while (f2) {
-		fSum = copiar_fila(f2, nueva_fila(f2->id));
-		fSum = fSum->next;
-		f2 = f2->next;
-	}
-	return sum;
 }
+
+void imprimir_resultado(Matriz* matrizp){
+    char modo='0';
+    char archivo[100];
+
+    printf("Ingrese el modo de impresion de resultados. 'f' por archivos, 'c' por consola\n");
+    scanf("%c",&modo);
+    while (modo!='c' || modo!='f'){
+        printf("Modo invalido,'f' por archivos, 'c' por consola\n ");
+        scanf("%c",&modo);
+    }
+
+    if (modo=='f'){
+        printf("Ingrese el nombre del archivo para crearlo\n");
+        scanf("%s",&archivo);
+        FILE* fp=fopen(archivo,"w");
+        imprimir_matriz(matrizp,fp);
+        fclose(fp);
+        return;
+    }
+
+    if (modo=='c'){
+        printf("Matriz resultante:\n");
+        imprimir_matriz(matrizp,stdout);
+        return;
+    }
+
+}
+
+void obtener(){
+    int  i,j;
+    double obt;
+
+    printf("Matriz:\n");
+    Matriz *m1=modo_rellenar();
+    printf("Ingrese la ubicacion del elemento a obtener\n");
+    scanf("%i %i",&i,&j);
+    obt=obt_elemento(i,j,m1);
+
+    if(obt)
+    printf("El elemento en %i %i es %lf",i,j,obt);
+
+    limpiar_matriz(m1);
+    return;
+}
+
+void asignar(){
+    int  i,j;
+    double elemento;
+
+    printf("Matriz:\n");
+    Matriz *m1=modo_rellenar();
+    printf("Ingrese la ubicacion del elemento a asignar:\n");
+    scanf("%i %i",&i,&j);
+    printf("Ingrese el valor: ");
+    scanf("%lf",&elemento)
+    m1=asignar_elemento(i,j,elemento,m1);
+
+    imprimir_resultado(m1);
+    return;
+}
+
+}
+
+void suma(){
+    printf("Matriz 1:\n");
+    Matriz *m1=modo_rellenar();
+    printf("Matriz 2:\n");
+    Matriz *m2=modo_rellenar();
+
+    Matriz *sum=sumar(m1,m2);
+    imprimir_resultado(sum);
+
+    limpiar_matriz(m1);
+    limpiar_matriz(m2);
+    limpiar_matriz(sum);
+    return;
+}
+
+void producto_es(){
+    double e;
+
+    printf("Matriz 1:\n");
+    Matriz *m1=modo_rellenar();
+    printf("Escalar: ");
+    scanf("%i",&e);
+
+    m1=escalar_matriz(m1,e);
+
+    imprimir_resultado(m1);
+    return;
+}
+
+void producto(){
+    printf("Matriz 1:\n");
+    Matriz *m1=modo_rellenar();
+    printf("Matriz 2:\n");
+    Matriz *m2=modo_rellenar();
+
+    Matriz *mult;
+    mult=multiplicar_matrices(m1,m2);
+    imprimir_resultado(mult);
+
+    limpiar_matriz(m1);
+    limpiar_matriz(m2);
+    limpiar_matriz(mult)
+    return;
+}
+
+void transp(){
+    printf("Matriz :\n");
+    Matriz *m1=modo_rellenar();
+
+    Matriz *mtrans=transponer(m1);
+    imprimir_resultado(mtrans);
+    return;
+}
+
+void rellenar_imprimir(){
+    printf("Matriz :\n");
+    Matriz *m1=modo_rellenar();
+    imprimir_resultado(m1);
+    return;
+}
+
+
