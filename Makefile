@@ -1,7 +1,11 @@
-# Archivo con funcionalidad básica de matrices
+# Archivo de objeto para las matrices
 matriz.o: matriz.h matriz.c
-	gcc -Wall -g -c matriz.c -o matriz.o
+	gcc -Wall -c matriz.c -o matriz.o
 
-# Programa principal
-proy1: proy1.c matriz.o
-	gcc -Wall -g -o proy1 proy1.c matriz.o
+# Archivo de objeto para el programa principal
+proy1.o: proy1.c matriz.h
+	gcc -Wall -c proy1.c -o proy1.o
+
+# Ejecutable
+proy1: proy1.o matriz.o
+	gcc -Wall proy1.o matriz.o -o proy1 

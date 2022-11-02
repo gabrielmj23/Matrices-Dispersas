@@ -89,7 +89,7 @@ void imprimir_resultado(Matriz* matrizp){
   char modo;
   char archivo[100];
 
-  printf("Ingrese el modo de impresion de resultados. 'f' por archivos, 'c' por consola\n");
+  printf("\nIngrese el modo de impresion de resultados. 'f' por archivos, 'c' por consola\n");
   while ((modo=getchar())!='\n' && modo!=EOF);
   scanf("%c",&modo);
 

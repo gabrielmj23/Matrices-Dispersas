@@ -64,12 +64,16 @@ Columna *nueva_columna(int id, double val) {
 // Agrega una nueva columna a filaP siguiente a su última columna
 Fila *insertar_col_final(Fila *filaP, Columna *nuevaC) {
 	// Agrega al inicio de la fila
-	if (!filaP->primeraCol)
-		filaP->primeraCol = filaP->ultCol = nuevaC;
+	if (!filaP->primeraCol) {
+		filaP->primeraCol = nuevaC;
+		filaP->ultCol = nuevaC;
+	}
 
 	// Agrega al final
-	else
-		filaP->ultCol = filaP->ultCol->next = nuevaC;
+	else {
+		filaP->ultCol->next = nuevaC;
+		filaP->ultCol = filaP->ultCol->next;
+	}
 	return filaP;
 }
 
@@ -94,7 +98,7 @@ Matriz *rellenar_matriz(FILE *fp, char modo) {
 	register int elem;
 	int i, j;
 	double v;
-	if (modo == 'c')
+	if (modo == 'c' && e != 0)
 		printf("Ingrese cada elemento no nulo con su fila, columna y valor:\n");
 
 	for (elem = 0; elem < e; elem++) {
@@ -287,7 +291,7 @@ Matriz *asignar_elemento(int i, int j, double elemento, Matriz *matrizP) {
 Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 	// Validar argumentos
 	if (!m1 || !m2) {
-		fprintf(stderr, "No se puede sumar si alguna matriz es nula\n");
+		fprintf(stderr, "No se puede sumar si alguna matriz no existe\n");
 		exit(1);
 	}
 	if (m1->numFilas != m2->numFilas || m1->numColumnas != m2->numColumnas) {
@@ -302,7 +306,7 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 	Fila *f1 = m1->filas, *f2 = m2->filas, *fSum = sum->filas;
 	Columna *c1, *c2, *minCol;
 
-	 	while (f1 && f2) {
+	while (f1 && f2) {
 		// Crear fila
 		idFilaAct = MIN(f1->id, f2->id);
 		if (fSum->primeraCol) {
@@ -360,14 +364,14 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 
 	// Copiar filas que hayan sobrado (las listas pueden tener longitudes distintas)
 	while (f1) {
-		fSum = copiar_fila(f1, nueva_fila(f1->id));
-		fSum = fSum->next;
+		fSum->next = copiar_fila(f1, nueva_fila(f1->id));
 		f1 = f1->next;
+		fSum = fSum->next;
 	}
 	while (f2) {
-		fSum = copiar_fila(f2, nueva_fila(f2->id));
-		fSum = fSum->next;
+		fSum->next = copiar_fila(f2, nueva_fila(f2->id));
 		f2 = f2->next;
+		fSum = fSum->next;
 	}
 	return sum;
 }
