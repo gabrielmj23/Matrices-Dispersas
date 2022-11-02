@@ -114,7 +114,7 @@ void imprimir_resultado(Matriz* matrizp){
   }
   // Escribir en consola
   else{
-    printf("Matriz resultante:\n");
+    printf("\nMatriz resultante:\n");
     imprimir_matriz(matrizp,stdout);
   }
   getchar();
@@ -125,12 +125,12 @@ void imprimir_resultado(Matriz* matrizp){
 void obtener(){
   int i,j;
 
-	printf("Matriz:\n");
+	printf("\nMatriz:\n");
   Matriz *m1=modo_rellenar();
   printf("Ingrese la ubicacion del elemento a obtener\n");
   scanf("%i %i",&i,&j);
 
-  printf("El elemento en %i %i es %.3lf\n",i,j,obt_elemento(i,j,m1));
+  printf("\nEl elemento en %i %i es %.3lf\n",i,j,obt_elemento(i,j,m1));
   getchar();
   getchar();
   limpiar_matriz(m1);
@@ -141,7 +141,7 @@ void asignar(){
   int i,j;
   double elemento;
 
-  printf("Matriz:\n");
+  printf("\nMatriz:\n");
   Matriz *m1=modo_rellenar();
   printf("Ingrese la ubicacion del elemento a asignar:\n");
   scanf("%i %i",&i,&j);
@@ -157,9 +157,9 @@ void asignar(){
 
 
 void suma(){
-  printf("Matriz 1:\n");
+  printf("\nMatriz 1:\n");
   Matriz *m1=modo_rellenar();
-  printf("Matriz 2:\n");
+  printf("\nMatriz 2:\n");
   Matriz *m2=modo_rellenar();
 
   Matriz *sum=sumar(m1,m2);
@@ -175,9 +175,9 @@ void suma(){
 void escalar_producto(){
   double e;
 
-  printf("Matriz 1:\n");
+  printf("\nMatriz:\n");
   Matriz *m1=modo_rellenar();
-  printf("Escalar: ");
+  printf("\nEscalar: ");
   scanf("%lf",&e);
 
   m1=escalar_matriz(m1,e);
@@ -189,9 +189,9 @@ void escalar_producto(){
 }
 
 void producto(){
-  printf("Matriz 1:\n");
+  printf("\nMatriz 1:\n");
   Matriz *m1=modo_rellenar();
-  printf("Matriz 2:\n");
+  printf("\nMatriz 2:\n");
   Matriz *m2=modo_rellenar();
 
   Matriz *mult;
@@ -206,7 +206,7 @@ void producto(){
 }
 
 void transp(){
-  printf("Matriz :\n");
+  printf("\nMatriz :\n");
   Matriz *m1=modo_rellenar();
 
   Matriz *mtrans=transponer(m1);
@@ -219,7 +219,7 @@ void transp(){
 }
 
 void rellenar_imprimir(){
-  printf("Matriz :\n");
+  printf("\nMatriz :\n");
   Matriz *m1=modo_rellenar();
   imprimir_resultado(m1);
   limpiar_matriz(m1);
