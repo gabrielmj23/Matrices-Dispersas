@@ -192,7 +192,7 @@ void imprimir_matriz(const Matriz *matrizP, FILE *fp) {
 
 
 // Obtener un elemento de la matriz
-int obt_elemento(int i, int j, Matriz *matrizP) {
+double obt_elemento(int i, int j, Matriz *matrizP) {
   // Revisar si la matriz existe
   if (!matrizP){
     fprintf(stderr, "obt_elemento: La matriz no existe\n");

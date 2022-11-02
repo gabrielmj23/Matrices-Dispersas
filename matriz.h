@@ -45,7 +45,7 @@ Fila *insertar_col_final(Fila *filaP, Columna *nuevaC);
 
 // Funciones básicas
 void imprimir_matriz(const Matriz *matrizP, FILE *fp);
-int obt_elemento(int i, int j, Matriz *matrizP);
+double obt_elemento(int i, int j, Matriz *matrizP);
 Matriz *asignar_elemento(int i, int j, double elemento, Matriz *matrizP);
 
 // Funciones de aritmética de matrices
