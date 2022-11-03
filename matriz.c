@@ -7,7 +7,7 @@
 
 
 // Crea una nueva matriz
-Matriz *nueva_matriz(int nFilas, int nCols) {
+Matriz *nueva_matriz(const int nFilas, const int nCols) {
 	Matriz *m;
 
 	// Reservar memoria y verificar errores
@@ -25,7 +25,7 @@ Matriz *nueva_matriz(int nFilas, int nCols) {
 
 
 // Crea una nueva fila
-Fila *nueva_fila(int id) {
+Fila *nueva_fila(const int id) {
 	Fila *f;
 
 	// Reservar memoria y verificar errores
@@ -44,7 +44,7 @@ Fila *nueva_fila(int id) {
 
 
 // Crea una nueva columna
-Columna *nueva_columna(int id, double val) {
+Columna *nueva_columna(const int id, const double val) {
 	Columna *c;
 
 	// Reservar memoria y verificar errores
@@ -80,18 +80,28 @@ Fila *insertar_col_final(Fila *filaP, Columna *nuevaC) {
 
 // Pide entradas del usuario y devuelve una matriz llena
 // El modo 'c' indica entrada por consola --> se imprimen salidas que ayudan a ingresar la matriz
-Matriz *rellenar_matriz(FILE *fp, char modo) {
+Matriz *rellenar_matriz(FILE *fp, const char modo) {
 	// Pedir dimensiones
 	int numF, numC;
 	if (modo == 'c')
 		printf("Ingrese las dimensiones de la matriz (filas y columnas): ");
 	fscanf(fp, "%i %i", &numF, &numC);
 
+	if (numF < 1 || numC < 1) {
+		fprintf(stderr, "rellenar_matriz: Su matriz tiene dimensiones invalidas\n");
+		exit(1);
+	}
+
 	// Pedir cantidad de elementos
 	int e;
 	if (modo == 'c')
 		printf("Ingrese la cantidad de elementos no nulos: ");
 	fscanf(fp, "%i", &e);
+
+	if (e < 0) {
+		fprintf(stderr, "rellenar_matriz: Debe tener 0 o mas elementos no nulos\n");
+		exit(1);
+	}
 
 	Matriz *nuevaM = nueva_matriz(numF, numC);
 	// Pedir cada elemento de la matriz con sus coordenadas
@@ -103,7 +113,8 @@ Matriz *rellenar_matriz(FILE *fp, char modo) {
 
 	for (elem = 0; elem < e; elem++) {
 		fscanf(fp, "%i %i %lf", &i, &j, &v);
-		nuevaM = asignar_elemento(i, j, v, nuevaM);
+		if (v)
+			nuevaM = asignar_elemento(i, j, v, nuevaM);
 	}
 	return nuevaM;
 }
@@ -196,7 +207,7 @@ void imprimir_matriz(const Matriz *matrizP, FILE *fp) {
 
 
 // Obtener un elemento de la matriz
-double obt_elemento(int i, int j, Matriz *matrizP) {
+double obt_elemento(const int i, const int j, const Matriz *matrizP) {
   // Revisar si la matriz existe
   if (!matrizP){
     fprintf(stderr, "obt_elemento: La matriz no existe\n");
@@ -228,7 +239,7 @@ double obt_elemento(int i, int j, Matriz *matrizP) {
 
 
 // Asignar valor a un elemento de la matriz
-Matriz *asignar_elemento(int i, int j, double elemento, Matriz *matrizP) {
+Matriz *asignar_elemento(const int i, const int j, const double elemento, Matriz *matrizP) {
   // Revisar si la matriz existe
   if (!matrizP){
     fprintf(stderr, "asignar_elemento: La matriz no existe\n");
@@ -251,11 +262,38 @@ Matriz *asignar_elemento(int i, int j, double elemento, Matriz *matrizP) {
     for (; columna_aux!=NULL && columna_aux->id<j; columna_aux=columna_aux->next)
       prev_col=columna_aux;
 
-    // Si encuentra la columna, asigna el elemento
+    // Si encuentra la columna, asigna el elemento. Lo elimina si el valor a asignar es 0
     if (columna_aux && columna_aux->id==j) {
-      columna_aux->valor=elemento;
+    	if (elemento)
+      	columna_aux->valor=elemento;
+      
+      else{
+      	// Cuando la fila solo contiene al elemento, elimino la fila
+      	if (fila_aux->primeraCol == columna_aux && fila_aux->ultCol == columna_aux) {
+      		if (!prev_fila)
+      			matrizP->filas = fila_aux->next;
+      		else
+      			prev_fila->next = fila_aux->next;
+      		free(fila_aux);
+      	}
+      	// Cuando hay más columnas, ajusto los enlaces antes de eliminar
+      	else {
+      		if (prev_col)
+      			prev_col->next = columna_aux->next;
+      		else
+      			fila_aux->primeraCol = columna_aux->next;
+      		
+      		if (fila_aux->ultCol == columna_aux)
+      			fila_aux->ultCol = prev_col;
+      	}
+      	free(columna_aux);
+      }
       return matrizP;
     }
+
+    // Si no consiguió la columna y se quiere asignar 0, no se modifica la matriz
+    if (!elemento)
+    	return matrizP;
 
     // Si no encuentra el id de la columna la crea
     Columna *nColumna = nueva_columna(j,elemento);
@@ -270,6 +308,10 @@ Matriz *asignar_elemento(int i, int j, double elemento, Matriz *matrizP) {
     	fila_aux->primeraCol = nColumna;
     return matrizP;
   }
+
+  // Si no consiguió la fila y quiere asignar 0, no se modifica la matriz
+  if (!elemento)
+  	return matrizP;
 
   // Si no encuentra el id crea la fila y la columna
   Fila *nFila = nueva_fila(i);
@@ -288,7 +330,7 @@ Matriz *asignar_elemento(int i, int j, double elemento, Matriz *matrizP) {
 
 
 // Sumar dos matrices -> Devuelve un puntero a la matriz conteniendo la suma
-Matriz *sumar(const Matriz *m1, const Matriz *m2) {
+Matriz *sumar_matrices(const Matriz *m1, const Matriz *m2) {
 	// Validar argumentos
 	if (!m1 || !m2) {
 		fprintf(stderr, "No se puede sumar si alguna matriz no existe\n");
@@ -380,7 +422,7 @@ Matriz *sumar(const Matriz *m1, const Matriz *m2) {
 // Transponer una matriz -> Devuelve un puntero a una nueva matriz conteniendo la transpuesta
 Matriz *transponer(const Matriz *matrizP) {
 	if (!matrizP) {
-		fprintf(stderr, "No se puede transponer una matriz nula\n");
+		fprintf(stderr, "No se puede transponer una matriz que no existe\n");
 		exit(1);
 	}
 
@@ -421,7 +463,7 @@ Matriz *transponer(const Matriz *matrizP) {
 // Multiplica m1 y m2 y devuelve un apuntador a la matriz producto
 Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2) {
 	if (!m1 || !m2) {
-		fprintf(stderr, "No se pueden multiplicar matrices si alguna es nula\n");
+		fprintf(stderr, "No se pueden multiplicar matrices si alguna no existe\n");
 		exit(1);
 	}
 	if (m1->numColumnas != m2->numFilas) {
@@ -478,7 +520,9 @@ Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2) {
 	return mult;
 }
 
-Matriz *escalar_matriz(Matriz *matrizP, double escalar) {
+
+// Multiplica matrizP por un escalar
+Matriz *escalar_matriz(Matriz *matrizP, const double escalar) {
   if (!matrizP || escalar == 1)
     return matrizP;
 

@@ -13,42 +13,43 @@ void transp();
 void rellenar_imprimir();
 
 int main(void) {
-	int opc=0;
+	char opc;
 	do {
     system("clear");
-    printf("1.Obtener elemento\n2.Asignar elemento\n3.Sumar matrices\n4.Producto por escalar\n5.Producto de matrices\n6.Transponer matriz\n7.Crear e imprimir matriz\n8.Salir\n");
-    scanf("%i",&opc);
+    printf("*** Matrices Dispersas ***\n\n1.Obtener elemento\n2.Asignar elemento\n3.Sumar matrices\n4.Producto por escalar\n5.Producto de matrices\n6.Transponer matriz\n7.Crear e imprimir matriz\n8.Salir\n");
+    scanf("%c",&opc);
     fflush(stdin);
 
     switch (opc){
-      case 1:
+      case '1':
         obtener();
         break;
-      case 2:
+      case '2':
         asignar();
         break;
-      case 3:
+      case '3':
         suma();
         break;
-      case 4:
+      case '4':
         escalar_producto();
         break;
-      case 5:
+      case '5':
         producto();
         break;
-      case 6:
+      case '6':
         transp();
         break;
-      case 7:
+      case '7':
         rellenar_imprimir();
         break;
     }
 	}
-	while(opc!=8);
+	while(opc!='8');
 	return 0;
 }
 
 
+// Utilidad para pedir modo de entrada e ingresar datos
 Matriz *modo_rellenar(){
   char modo;
   char archivo[100];
@@ -84,7 +85,7 @@ Matriz *modo_rellenar(){
   return m;
 }
 
-
+// Utilidad para pedir modo de salida y mostrar datos
 void imprimir_resultado(Matriz* matrizp){
   char modo;
   char archivo[100];
@@ -121,7 +122,7 @@ void imprimir_resultado(Matriz* matrizp){
   getchar();
 }
 
-
+// Opcion de obtener elemento
 void obtener(){
   int i,j;
 
@@ -136,7 +137,7 @@ void obtener(){
   limpiar_matriz(m1);
 }
 
-
+// Opcion de asignar elemento
 void asignar(){
   int i,j;
   double elemento;
@@ -155,14 +156,14 @@ void asignar(){
   limpiar_matriz(m1);
 }
 
-
+// Opcion de sumar matrices
 void suma(){
   printf("\nMatriz 1:\n");
   Matriz *m1=modo_rellenar();
   printf("\nMatriz 2:\n");
   Matriz *m2=modo_rellenar();
 
-  Matriz *sum=sumar(m1,m2);
+  Matriz *sum=sumar_matrices(m1,m2);
   imprimir_resultado(sum);
   getchar();
   getchar();
@@ -172,6 +173,7 @@ void suma(){
   limpiar_matriz(sum);
 }
 
+// Opcion de multiplicar por escalar
 void escalar_producto(){
   double e;
 
@@ -188,6 +190,7 @@ void escalar_producto(){
   limpiar_matriz(m1);
 }
 
+// Opcion de multiplicar matrices
 void producto(){
   printf("\nMatriz 1:\n");
   Matriz *m1=modo_rellenar();
@@ -205,6 +208,7 @@ void producto(){
   limpiar_matriz(mult);
 }
 
+// Opcion de transponer una matriz
 void transp(){
   printf("\nMatriz :\n");
   Matriz *m1=modo_rellenar();
@@ -218,6 +222,7 @@ void transp(){
   limpiar_matriz(mtrans);
 }
 
+// Opcion de rellenar una matriz y mostrarla
 void rellenar_imprimir(){
   printf("\nMatriz :\n");
   Matriz *m1=modo_rellenar();

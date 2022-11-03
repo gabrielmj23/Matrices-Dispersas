@@ -33,10 +33,10 @@ Matriz;
 
 
 // Funciones de creación y liberación de matrices
-Matriz *nueva_matriz(int nFilas, int nCols);
-Fila *nueva_fila(int id);
-Columna *nueva_columna(int id, double val);
-Matriz *rellenar_matriz(FILE *fp, char modo);
+Matriz *nueva_matriz(const int nFilas, const int nCols);
+Fila *nueva_fila(const int id);
+Columna *nueva_columna(const int id, const double val);
+Matriz *rellenar_matriz(FILE *fp, const char modo);
 void limpiar_matriz(Matriz *matrizP);
 
 // Utilidades
@@ -45,11 +45,11 @@ Fila *insertar_col_final(Fila *filaP, Columna *nuevaC);
 
 // Funciones básicas
 void imprimir_matriz(const Matriz *matrizP, FILE *fp);
-double obt_elemento(int i, int j, Matriz *matrizP);
-Matriz *asignar_elemento(int i, int j, double elemento, Matriz *matrizP);
+double obt_elemento(const int i, const int j, const Matriz *matrizP);
+Matriz *asignar_elemento(const int i, const int j, const double elemento, Matriz *matrizP);
 
 // Funciones de aritmética de matrices
-Matriz *sumar(const Matriz *m1, const Matriz *m2);
+Matriz *sumar_matrices(const Matriz *m1, const Matriz *m2);
 Matriz *transponer(const Matriz *matrizP);
 Matriz *multiplicar_matrices(const Matriz *m1, const Matriz *m2);
-Matriz *escalar_matriz(Matriz *matrizP, double escalar);
+Matriz *escalar_matriz(Matriz *matrizP, const double escalar);
