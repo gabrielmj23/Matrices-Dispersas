@@ -44,6 +44,7 @@ Fila *copiar_fila(Fila *src, Fila *dest);
 Fila *insertar_col_final(Fila *filaP, Columna *nuevaC);
 
 // Funciones básicas
+void imprimir_nodos(const Matriz *matrizP, FILE *fp);
 void imprimir_matriz(const Matriz *matrizP, FILE *fp);
 double obt_elemento(const int i, const int j, const Matriz *matrizP);
 Matriz *asignar_elemento(const int i, const int j, const double elemento, Matriz *matrizP);

@@ -87,13 +87,25 @@ Matriz *modo_rellenar(){
 
 // Utilidad para pedir modo de salida y mostrar datos
 void imprimir_resultado(Matriz* matrizp){
-  char modo;
+  char formato,modo;
   char archivo[100];
 
+  printf("\nIngrese el formato de salida. 1 para matriz completa, 2 para elementos no nulos\n");
+  // Limpiar buffer y leer
+  while ((formato=getchar())!='\n' && formato!=EOF);
+  scanf("%c",&formato);
+  // Validar
+  while (formato!='1' && formato!='2'){
+    printf("Modo invalido, 1 para matriz completa, 2 para elementos no nulos\n");
+    while ((formato=getchar())!='\n' && formato!=EOF);
+    scanf("%c",&formato);
+  }
+
   printf("\nIngrese el modo de impresion de resultados. 'f' por archivos, 'c' por consola\n");
+  // Limpiar buffer y leer
   while ((modo=getchar())!='\n' && modo!=EOF);
   scanf("%c",&modo);
-
+  // Validar
   while (modo!='c' && modo!='f'){
     printf("Modo invalido,'f' por archivos, 'c' por consola\n ");
     while ((modo=getchar())!='\n' && modo!=EOF);
@@ -109,14 +121,20 @@ void imprimir_resultado(Matriz* matrizp){
     	fprintf(stderr, "No se pudo abrir el archivo\n");
     	exit(1);
     }
-    imprimir_matriz(matrizp,fp);
+    if (formato=='1')
+      imprimir_matriz(matrizp,fp);
+    else
+      imprimir_nodos(matrizp,fp);
     fclose(fp);
     printf("Se guardo el resultado en %s",archivo);
   }
   // Escribir en consola
   else{
     printf("\nMatriz resultante:\n");
-    imprimir_matriz(matrizp,stdout);
+    if (formato=='1')
+      imprimir_matriz(matrizp,stdout);
+    else
+      imprimir_nodos(matrizp,stdout);
   }
   getchar();
   getchar();

@@ -157,7 +157,33 @@ Fila *copiar_fila(Fila *src, Fila *dest) {
 }
 
 
-// Muestra en pantalla la matriz apuntada por matrizP
+// Muestra solo los nodos no nulos de la matriz apuntada por matrizP
+void imprimir_nodos(const Matriz *matrizP, FILE *fp) {
+	if (!matrizP) {
+		fprintf(fp, "La matriz no existe\n");
+		return;
+	}
+
+	// Imprimir dimensiones
+	fprintf(fp, "%i %i\n", matrizP->numFilas, matrizP->numColumnas);
+
+	// Imprimir nodos en formato i j valor
+	if (!matrizP->filas) {
+		fprintf(fp, "La matriz es nula\n");
+		return;
+	}
+	Fila *filaAct = matrizP->filas;
+	Columna *colAct;
+	while (filaAct) {
+		for (colAct = filaAct->primeraCol; colAct != NULL; colAct = colAct->next)
+			fprintf(fp, "%i %i %.3lf\n", filaAct->id, colAct->id, colAct->valor);
+		filaAct = filaAct->next;
+	}
+	
+}
+
+
+// Muestra la matriz apuntada por matrizP
 void imprimir_matriz(const Matriz *matrizP, FILE *fp) {
 	if (!matrizP) {
 		fprintf(fp, "La matriz no existe\n");
